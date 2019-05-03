@@ -470,7 +470,7 @@ var view_root = {
  * アプリケーション
  */
 function MyApp(apConfig) {
-  this.apConfig = apConfig
+  this.apConfig = apConfig;
   this.event = {};
   this.fw = undefined;
 };
@@ -676,7 +676,7 @@ MyApp.prototype.afterLoginPrepare = function(self, rxData) {
     self.apConfig.request_header.session_id = rxData.body.session_id;
     self.serverComm(self, 'login', vals, self.afterLogin);
   } else {
-    alert('ログインに失敗しました.')
+    alert('ログインに失敗しました.');
   }
 };
 /**
@@ -687,10 +687,10 @@ MyApp.prototype.afterLogin = function(self, rxData) {
   if (rxData.status.result === 'OK') {
     //console.log(rxData.body.session_id);
     self.apConfig.request_header.session_id = rxData.body.session_id;
-    alert('ログインしました.')
+    alert('ログインしました.');
     self.resetActivateForm(self);
   } else {
-    alert('ログインに失敗しました.')
+    alert('ログインに失敗しました.');
   }
 };
 /**
@@ -699,7 +699,7 @@ MyApp.prototype.afterLogin = function(self, rxData) {
  */
 MyApp.prototype.EM_findAllProject01 = function(self, target) {
   // 画面遷移の情報を設定
-  self.event['target'] = target
+  self.event['target'] = target;
   // サーバにプロジェクト一覧を要求する
   self.serverComm(self, 'project_list', '', self.projectList01);
 };
@@ -785,7 +785,7 @@ MyApp.prototype.EM_showNewProject = function(self) {
 MyApp.prototype.EM_newProject = function(self, vals) {
   // プロジェクト名の入力を確認
   if (vals.name == '') {
-    alert('[必須]プロジェクト名を入力して下さい')
+    alert('[必須]プロジェクト名を入力して下さい');
     return;
   }
 
@@ -805,7 +805,7 @@ MyApp.prototype.EM_newProject = function(self, vals) {
  */
 MyApp.prototype.newProjectResult = function(self, rxData) {
   if (rxData.status.result === 'OK') {
-    alert('プロジェクトを登録しました.')
+    alert('プロジェクトを登録しました.');
     self.resetActivateForm(self);
   } else {
     alert('プロジェクトの登録失敗.\n\n' + rxData.status.message);
@@ -868,7 +868,7 @@ MyApp.prototype.projectDetailResult = function(self, rxData) {
 MyApp.prototype.EM_editProject = function(self, vals) {
   // プロジェクト名の入力を確認
   if (vals.name == '') {
-    alert('[必須]プロジェクト名を入力して下さい')
+    alert('[必須]プロジェクト名を入力して下さい');
     return;
   }
 
@@ -888,7 +888,7 @@ MyApp.prototype.EM_editProject = function(self, vals) {
  */
 MyApp.prototype.editProjectResult = function(self, rxData) {
   if (rxData.status.result === 'OK') {
-    alert('更新しました.')
+    alert('更新しました.');
   } else {
     alert('更新失敗.\n\n' + rxData.status.message);
   }
@@ -1019,7 +1019,7 @@ MyApp.prototype.setSelectorOptions = function(fw, elm, vals) {
 MyApp.prototype.EM_newTicket = function(self, vals) {
   // チケットタイトルの入力を確認
   if (vals.title == '') {
-    alert('[必須]チケットタイトルを入力して下さい')
+    alert('[必須]チケットタイトルを入力して下さい');
     return;
   }
   // リクエストデータの編集
@@ -1051,7 +1051,7 @@ MyApp.prototype.editTicketRequest = function(self, vals) {
  */
 MyApp.prototype.newTicketResult = function(self, rxData) {
   if (rxData.status.result === 'OK') {
-    alert('チケットを登録しました.')
+    alert('チケットを登録しました.');
     self.resetActivateForm(self);
   } else {
     alert('チケットの登録失敗.\n\n' + rxData.status.message);
@@ -1062,7 +1062,7 @@ MyApp.prototype.newTicketResult = function(self, rxData) {
  * @since 2019/4/30
  */
 MyApp.prototype.EM_getTicketDetail = function(self, tid) {
-  console.log('todo EM_getTicketDetail')
+  console.log('todo EM_getTicketDetail');
   // todo 20190428 実装
   var req = {ticket_id: Number(tid)};
   self.serverComm(self, 'ticket_detail', req, self.ticketDetailResult);
@@ -1104,7 +1104,7 @@ MyApp.prototype.ticketDetailResult = function(self, rxData) {
 MyApp.prototype.EM_editTicket = function(self, vals) {
   // チケットタイトルの入力を確認
   if (vals.title == '') {
-    alert('[必須]チケットタイトルを入力して下さい')
+    alert('[必須]チケットタイトルを入力して下さい');
     return;
   }
 
@@ -1119,7 +1119,7 @@ MyApp.prototype.EM_editTicket = function(self, vals) {
  */
 MyApp.prototype.editTicketResult = function(self, rxData) {
   if (rxData.status.result === 'OK') {
-    alert('チケットを更新しました.')
+    alert('チケットを更新しました.');
     self.resetActivateForm(self);
   } else {
     alert('チケットの更新失敗.\n\n' + rxData.status.message);
@@ -1133,7 +1133,7 @@ MyApp.prototype.editTicketResult = function(self, rxData) {
 /***************************************
  * イベントマップ
  */
-var _evtMap = []
+var _evtMap = [];
 /**
  * 【イベント定義】アプリケーションの開始
  * @since 2019/4/6
@@ -1587,7 +1587,7 @@ FwLite.prototype.createElement = function(self, elmName, attr) {
  */
 FwLite.prototype.createBlockElement = function(self, attr) {
   var elm = self.createElement(self, 'div', attr);
-  if ('text' in attr) elm.innerText = attr.text
+  if ('text' in attr) elm.innerText = attr.text;
   return elm;
 };
 /**
@@ -1632,7 +1632,7 @@ FwLite.prototype.createTextareaElement = function(self, attr, inpType) {
   if ('placeholder' in attr) elm.placeholder = attr.placeholder;
   if ('value' in attr) elm.value = attr.value;
   if ('readonly' in attr) elm.readOnly = attr.readonly;
-  elm.rows = attr.rows
+  elm.rows = attr.rows;
   return elm;
 };
 /**
@@ -2094,16 +2094,16 @@ FwLite.prototype._ajax_getXHR = function(self) {
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onload = function() {
     self.ajax_onload(self, xhr);
-  }
+  };
   xhr.onerror = function() {
     self.ajax_onerror(self, xhr);
-  }
+  };
   xhr.onabort = function() {
     self.ajax_onabort(self, xhr);
-  }
+  };
   xhr.ontimeout = function() {
     self.ajax_ontimeout(self, xhr);
-  }
+  };
   return xhr;
 };
 /**
@@ -2180,6 +2180,6 @@ FwLite.prototype.ajax_ontimeout = function(self, xhr) {
  * フレームワークLiteを起動
  */
 var myFw = new FwLite(myApp);
-myFw.prepare(myFw)
+myFw.prepare(myFw);
 
 // end of framework
