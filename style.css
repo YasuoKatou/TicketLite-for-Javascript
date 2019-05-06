@@ -257,7 +257,10 @@ input[type="checkbox"] + label {
   padding: 5px;
 
   display: grid;
-  grid-template-columns: repeat(auto-fill, 0px 80% 20%);
+  grid-template-columns: 10px 80% 1fr;
+}
+.prj-list-box div:nth-child(1) {
+  opacity: 0;
 }
 .prj-list-box .title {
   font-size: 105%;
