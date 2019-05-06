@@ -1376,8 +1376,9 @@ var _ap_config = {
   // その他のビュー
 , other_view: undefined
 
-, server_uri: 'http://127.0.0.1:8080/'
+, server_uri: 'http://192.168.3.197/ticket_svr/'
 /*
+, server_uri: 'http://127.0.0.1:8080/'
 , server_uri: 'http://192.168.3.4:8080/'
 */
 , request_header: {app_name:'Ticket Lite for Web', app_ver: '0.0.1', session_id: undefined}

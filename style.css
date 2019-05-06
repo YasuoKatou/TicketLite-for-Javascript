@@ -28,8 +28,7 @@ body {
 }
 
 .page_hidden {
-  display: none;
-  /*visibility : hidden;*/
+  display: none!important;
 }
 
 /*********************
