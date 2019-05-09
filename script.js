@@ -1064,7 +1064,7 @@ MyApp.prototype.newTicketResult = function(self, rxData) {
 MyApp.prototype.EM_getTicketDetail = function(self, tid) {
   console.log('todo EM_getTicketDetail');
   // todo 20190428 実装
-  var req = {ticket_id: Number(tid)};
+  var req = {id: Number(tid)};
   self.serverComm(self, 'ticket_detail', req, self.ticketDetailResult);
 };
 /**
