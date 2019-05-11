@@ -92,7 +92,7 @@ var _vw_popup = [
        , id: 'popup-01-new', text: '新規'
       }
     , {  type: 'inp-button'
-       , id: 'popup-01-update', text: '更新'
+       , id: 'popup-01-update', text: '選択'
       }]
    }]
 }]
@@ -194,7 +194,7 @@ var _view03_sub02 = [
 ////////// 操作部
 var _view03_sub03 = [
    {  type: 'inp-submit', id: 'btn-new-project', text: '登録'}
- , {  type: 'inp-submit', id: 'btn-upd-project', text: '更新'}
+ , {  type: 'inp-submit', id: 'btn-upd-project', text: '選択'}
  , {  type: 'inp-reset', text: 'クリア'}
 ];
 ////////// ルート
@@ -282,21 +282,23 @@ var _view04_sub01 = [
 ];
 ////////// チケット管理情報
 var _view04_sub02 = [
-  {  type: 'inp-text', readonly: true, name: 'id'
+  {type: 'inp-text', readonly: true, name: 'id'
    , label: {text: 'チケットID', class: 'title'}
   }
-, {  type: 'inp-text', readonly: true, name: 'version'
+, {type: 'inp-text', readonly: true, name: 'version'
   , label: {text: 'バージョン', class: 'title'}
   }
-, {  type: 'inp-text', readonly: true, name: 'last_update'
+, {type: 'inp-text', readonly: true, name: 'last_update'
    , label: {text: '更新日時', class: 'title'}
+  }
+, {type: 'block', child: [{type: 'inp-button', id: 'btn-ticket-hist', text: '表示'}], label: {text: '履歴', class: 'title'}
   }
 ];
 ////////// 操作部
 var _view04_sub03 = [
-  {  type: 'inp-submit', id: 'btn-new-ticket', text: '登録'}
-, {  type: 'inp-submit', id: 'btn-upd-ticket', text: '更新'}
-, {  type: 'inp-reset', text: 'クリア'}
+  {type: 'inp-submit', id: 'btn-new-ticket', text: '登録'}
+, {type: 'inp-submit', id: 'btn-upd-ticket', text: '更新'}
+, {type: 'inp-reset', text: 'クリア'}
 ];
 ////////// ルート
 var _view04 = {
@@ -329,7 +331,31 @@ var _view04 = {
        }]
   }]
 };
-
+/****
+ * 履歴表示画面
+ * @since 2019/5/8
+ ****/
+var _view05 = {
+  title: 'ticket history view'
+, root: 'view05'
+, child: [
+    {  type: 'h4', text: 'チケット履歴'
+     , class: 'page-title'
+    }
+  , {  type: 'block'
+     , id: 'hist-list-body'
+     , text: 'ここに履歴を表示する'
+    }
+  , {  type: 'block'
+     , class: 'form-btn-area'
+     , child: [
+         {  type: 'inp-button'
+          , id: 'btn-hist-close'
+          , text: '閉じる'
+         }]
+    }
+  ]
+};
 /****
  * チケット検索画面
  * @since 2019/3/11
@@ -430,7 +456,7 @@ var app_header = {
  * @since 2019/3/5
  ****/
 var view_defs = [
-  _login_view, _view01, _view02, _view03, _view04
+  _login_view, _view01, _view02, _view03, _view04, _view05
 ];
 
 /****
@@ -447,6 +473,7 @@ var page_defs = [{
 , {  type: 'block', id: 'view02', class: 'page page_hidden'}
 , {  type: 'block', id: 'view03', class: 'page page_hidden'}
 , {  type: 'block', id: 'view04', class: 'page page_hidden'}
+, {  type: 'block', id: 'view05', class: 'page page_hidden'}
   ]}
 ];
 
@@ -658,7 +685,7 @@ MyApp.prototype.serverComm = function(self, path, body, proc) {
  * @since 2019/4/13
  */
 MyApp.prototype.EM_loginStart = function(self, target) {
-  self.event['target'] = target
+  self.event['target'] = target;
   // サーバにログイン準備を要求する
   self.serverComm(self, 'login/prepare', {}, self.afterLoginPrepare);
 };
@@ -721,7 +748,7 @@ MyApp.prototype.projectList01 = function(self, rxData) {
  */
 MyApp.prototype.EM_findAllProject02 = function(self, target) {
   // 画面遷移の情報を設定
-  self.event['target'] = target
+  self.event['target'] = target;
   // プロジェクト一覧をサーバに要求する
   self.serverComm(self, 'project_list', '', self.projectList02);
 };
@@ -899,10 +926,10 @@ MyApp.prototype.editProjectResult = function(self, rxData) {
  */
 MyApp.prototype.EM_selectTicketProject = function(self, target, vals) {
   var pid = Number(vals.project_id);
-  self.event['project_id'] = pid;
+  self.event['id'] = pid;
   self.event['project_name'] = vals.project_name;
-  // サーバにプロジェクトの更新要求
-  self.serverComm(self, 'ticket_list', {project_id: pid}
+  // サーバにチケット取得要求
+  self.serverComm(self, 'ticket_list', {id: pid}
   , self.selectTicketProjectResult);
 };
 /**
@@ -1125,8 +1152,121 @@ MyApp.prototype.editTicketResult = function(self, rxData) {
     alert('チケットの更新失敗.\n\n' + rxData.status.message);
   }
 };
+/**
+ * チケット履歴取得をサーバに要求する.
+ * @since 2019/5/8
+ */
+MyApp.prototype.EM_showTicketHistory = function(self, vals) {
+  // チケットIDを取得
+  req = {id: vals.id};
+  // サーバに履歴の要求
+  self.serverComm(self, 'ticket_history', req, self.ticketHistoryResult);
+};
+/**
+ * 指定配列に指定キーで同一値のオブジェクトを検索する.
+ * @since 2019/5/10
+ */
+MyApp.prototype.hasSameValue = function(list, item, key) {
+  for (var rec of list) {
+    if (rec[key] == item[key]) return rec;
+  }
+  return undefined;
+};
+/**
+ * 親ノードに子ノードを登録する.
+ * @since 2019/5/10
+ */
+MyApp.prototype.addToParentBranch = function(self, node, item, key) {
+  if (node.id == item[key]) {
+    item.child = [];
+    item.elmDef = self.createHistoryItemElement(self, item);
+    node.child.push(item);
+    return true;
+  }
+  for (var rec of node.child) {
+    if (rec.id == item[key]) {
+      item.child = [];
+      item.elmDef = self.createHistoryItemElement(self, item);
+      rec.child.push(item);
+      return true;
+    } else if (rec.child.length > 0) {
+      return self.addToParentBranch(self, rec, item, key);
+    }
+  }
+};
+/**
+ * チケットメモ(履歴)に作成する要素定義を作成する.
+ * @since 2019/5/11
+ */
+MyApp.prototype.createHistoryItemElement = function(self, item) {
+  // return {type: 'block', text: item.memo, child: []};
+  return {type: 'block', class: 'hist-item', child: [
+      {  type: 'p', text: item.memo}
+    , {  type: 'block', class: 'hist-item-remark-body'
+       , child: [
+          {  type: 'span', class: 'hist-item-remark'
+           , text: '作成者 : ' + item.create_user}
+        , {  type: 'span', class: 'hist-item-remark'
+           , text: '作成日時 : ' + item.create_date}
+     ]}
+  ]};
+};
+/**
+ * チケットメモ(履歴)に作成する要素(子ノード)定義を作成する.
+ * @since 2019/5/11
+ */
+MyApp.prototype.addElementToParentBranch = function(self, item) {
+  for (var rec of item.child) {
+    item.elmDef.child.push(rec.elmDef);
+    if (rec.child.length > 0) {
+      self.addElementToParentBranch(self, rec);
+    }
+  }
+};
+/**
+ * チケット履歴取得結果処理するをする.
+ * @since 2019/5/9
+ */
+MyApp.prototype.ticketHistoryResult = function(self, rxData) {
+  // 履歴の親子関係を構築する
+  var tr = [];
+  for (var rec of rxData.body) {
+    //console.log(rec);
+    // ルートを検索
+    var rr = self.hasSameValue(tr, rec, 'root_id');
+    if (rr) {
+      self.addToParentBranch(self, rr, rec, 'parent_id');
+    } else {
+      rec.child = [];
+      rec.elmDef = self.createHistoryItemElement(self, rec);
+      tr.push(rec);
+    }
+  }
+  // 要素作成定義を作成する.
+  var histDef = [];
+  for (var rec of tr) {
+    histDef.push(rec.elmDef);
+    if (rec.child.length > 0) {
+      self.addElementToParentBranch(self, rec);
+    }
+  }
+  // メモの一覧をビューに設定する
+  var wrapper = self.fw.findElement(self.fw, '#hist-list-body');
+  wrapper.textContent = null;
+  self.fw.make_view(self.fw, {child: histDef}, wrapper);
 
-
+  // ビューを切り替える（履歴一覧をアクティブにする）
+  self.changePageById(self, '#view05');
+};
+/**
+ * チケット履歴画面を閉じて、チケットメンテ画面に
+ * 遷移する.
+ * @since 2019/5/10
+ */
+MyApp.prototype.EM_closeTicketHistory = function(self) {
+  // チケットメンテ画面をアクティブにする
+  self.changePageById(self, '#view04');
+};
 
 
 
@@ -1353,6 +1493,34 @@ _evtMap.push({
   }
 });
 
+//
+/**
+ * 【イベント定義】チケットメンテナンス画面の
+ * 履歴「表示」ボタン押下
+ * @since 2019/5/8
+ */
+_evtMap.push({
+  type: 'click'
+, id_targets: ['btn-ticket-hist']
+, process: function(fw, evt, target, app) {
+    var vals = fw.findFormValues(fw, target);
+    app.EM_showTicketHistory(app, vals);
+  }
+});
+/**
+ * 【イベント定義】履歴画面の「閉じる」ボタン押下
+ * @since 2019/5/10
+ */
+_evtMap.push({
+  type: 'click'
+, id_targets: ['btn-hist-close']
+, process: function(fw, evt, target, app) {
+    app.EM_closeTicketHistory(app);
+  }
+});
+
+
+
 //_evtMap.push({});
 
 
@@ -1378,8 +1546,8 @@ var _ap_config = {
 
 , server_uri: 'http://192.168.3.197/ticket_svr/'
 /*
+, server_uri: 'http://192.168.3.197/ticket_svr/'
 , server_uri: 'http://127.0.0.1:8080/'
-, server_uri: 'http://192.168.3.4:8080/'
 */
 , request_header: {app_name:'Ticket Lite for Web', app_ver: '0.0.1', session_id: undefined}
 , comm_timer: 10000

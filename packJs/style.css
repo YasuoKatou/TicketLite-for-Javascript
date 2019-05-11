@@ -277,6 +277,21 @@ input[type="checkbox"] + label {
   /*background-color: yellow;*/
 }
 
+/*******************************
+ * チケットメモ(履歴)
+ */
+ .hist-item {
+  padding: 5px 0px 5px 5px;
+  border: solid lightgray 1px;
+  border-radius: 5px;
+}
+.hist-item-remark {
+  font-size: 0.7em;
+  padding-left: 0.7em;
+}
+.hist-item-remark-body {
+  text-align: right;
+}
 
 /*******************************
  * ヘッダ ＋ ハンバーガーメニュー
