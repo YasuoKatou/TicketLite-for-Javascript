@@ -194,7 +194,7 @@ var _view03_sub02 = [
 ////////// 操作部
 var _view03_sub03 = [
    {  type: 'inp-submit', id: 'btn-new-project', text: '登録'}
- , {  type: 'inp-submit', id: 'btn-upd-project', text: '選択'}
+ , {  type: 'inp-submit', id: 'btn-upd-project', text: '更新'}
  , {  type: 'inp-reset', text: 'クリア'}
 ];
 ////////// ルート
@@ -926,7 +926,7 @@ MyApp.prototype.editProjectResult = function(self, rxData) {
  */
 MyApp.prototype.EM_selectTicketProject = function(self, target, vals) {
   var pid = Number(vals.project_id);
-  self.event['id'] = pid;
+  self.event['project_id'] = pid;
   self.event['project_name'] = vals.project_name;
   // サーバにチケット取得要求
   self.serverComm(self, 'ticket_list', {id: pid}
@@ -1055,7 +1055,7 @@ MyApp.prototype.EM_newTicket = function(self, vals) {
   self.serverComm(self, 'new_ticket', vals, self.newTicketResult);
 };
 /**
- * チケットデータの編集をお行う.
+ * チケットデータの編集を行う.
  * @since 2019/4/30
  */
 MyApp.prototype.editTicketRequest = function(self, vals) {
