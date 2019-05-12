@@ -959,7 +959,8 @@ MyApp.prototype.selectTicketProjectResult = function(self, rxData) {
       // チケットID
       wrap.child.push({type: 'p', text: tkt.id, class: 'list_01_item_hide'});
       // チケット名称
-      wrap.child.push({type: 'p', text: tkt.title});
+      var ttl = '【' + tkt.status + '】' + tkt.title;
+      wrap.child.push({type: 'p', text: ttl});
     }
   } else {
     // todo 20190428 チケット無しは、チケット登録画面委遷移する
