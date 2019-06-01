@@ -565,7 +565,7 @@ MyApp.prototype.changePage = function(self, target) {
  * @since 2019/4/28
  */
 MyApp.prototype.changePageById = function(self, elmId) {
-  var elm = self.fw.findElement(self.fw, elmId);
+  var elm = self.fw.findElement(elmId);
   if (!elm) {
     console.log(elmId + ' not found');
     return false;
@@ -995,7 +995,7 @@ MyApp.prototype.ticketMasterResult = function(self, rxData) {
   self.hideElement(self, 'ticket-upd-key');
   self.hideElement(self, 'btn-upd-ticket');
   // プロジェクト名の表示
-  var pgElm = self.fw.findElement(self.fw, '#view04');
+  var pgElm = self.fw.findElement('#view04');
   var name = pgElm.querySelectorAll('.read_only');
   name[0].innerText = self.event['project_name'];
   // セレクタの初期化
@@ -1106,7 +1106,7 @@ MyApp.prototype.ticketDetailResult = function(self, rxData) {
   self.showElement(self, 'ticket-upd-key');
   self.showElement(self, 'btn-upd-ticket');
   // プロジェクト名の表示
-  var pgElm = self.fw.findElement(self.fw, '#view04');
+  var pgElm = self.fw.findElement('#view04');
   var name = pgElm.querySelectorAll('.read_only');
   name[0].innerText = self.event['project_name'];
   // セレクタの初期化
@@ -1252,7 +1252,7 @@ MyApp.prototype.ticketHistoryResult = function(self, rxData) {
     }
   }
   // メモの一覧をビューに設定する
-  var wrapper = self.fw.findElement(self.fw, '#hist-list-body');
+  var wrapper = self.fw.findElement('#hist-list-body');
   wrapper.textContent = null;
   self.fw.make_view(self.fw, {child: histDef}, wrapper);
 
@@ -1575,6 +1575,13 @@ function FwLite(app) {
   app.fw = this;
 };
 /**
+ * ディープコピー.
+ * @since 2019/6/1
+ */
+FwLite.prototype.deepCopy = function(source) {
+  return JSON.parse(JSON.stringify(source));
+};
+/**
  * 先頭から指定行で分割する.
  * @since 2019/4/15
  */
@@ -1757,6 +1764,19 @@ FwLite.prototype.createElement = function(self, elmName, attr) {
  */
 FwLite.prototype.createBlockElement = function(self, attr) {
   var elm = self.createElement(self, 'div', attr);
+  if ('text' in attr) elm.innerText = attr.text;
+  return elm;
+};
+/**
+ * アンカー要素を生成する.
+ * @param {このフレームワーク} self
+ * @param {アンカー要素に設定する属性} attr 
+ * @return A要素
+ * @since 2019/6/1
+ */
+FwLite.prototype.createAnchorElement = function(self, attr) {
+  var elm = self.createElement(self, 'a', attr);
+  if ('href' in attr) elm.href = attr.href;
   if ('text' in attr) elm.innerText = attr.text;
   return elm;
 };
@@ -1978,6 +1998,8 @@ FwLite.prototype.make_view = function(self, vw, pelm) {
       elm = self.createButtonElement(self, pt, 'button');
     } else if (ptTyp == 'inp-select') {
       elm = self.createSelectorElement(self, pt);
+    } else if (ptTyp == 'anchor') {
+      elm = self.createAnchorElement(self, pt);
 
     } else if (ptTyp == 'def-list') {
       elm = self.createDefinitionList(self, pt);
@@ -2200,12 +2222,11 @@ FwLite.prototype.keyList = function(l, k) {
 };
 /**
  * 指定の単一要素を検索する.
- * @param {このフレームワーク} self
  * @param {検索要素のキー名称} tgtNm
  * @return 要素オブジェクト
  * @since 0.0.1 (2019/02/16)
  */
-FwLite.prototype.findElement = function(self, tgtNm) {
+FwLite.prototype.findElement = function(tgtNm) {
   return document.querySelector(tgtNm);
 };
 /**
@@ -2245,8 +2266,13 @@ FwLite.prototype.ajax_S100 = function(self) {
 FwLite.prototype.ajax_S200 = function(self) {
   if (self._ajax.status === 'tx-101') {
     console.log('send request');
-    var xhr = self._ajax_getXHR(self);
-    xhr.send(JSON.stringify(self._ajax.que[0].req_data));
+    var req = self._ajax.que[0];
+    var xhr = self._ajax_getXHR(self, req);
+    if (req.req_data) {
+      xhr.send(JSON.stringify(req.req_data));
+    } else {
+      xhr.send(null);
+    }
   } else {
     console.log('not supportted status : ' + self._ajax.status);
   }
@@ -2254,14 +2280,18 @@ FwLite.prototype.ajax_S200 = function(self) {
 /**
  * XMLHttpRequestを生成し、初期設定を行う.
  * @param {このフレームワーク} self
+ * @param {httpリクエスト} req
  * @since 2019/3/17
  */
-FwLite.prototype._ajax_getXHR = function(self) {
-  var req = self._ajax.que[0];
+FwLite.prototype._ajax_getXHR = function(self, req) {
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', req.url, true);
+  if ('method' in req && req.method == 'GET') {
+    xhr.open('GET', req.url, true);
+  } else {
+    xhr.open('POST', req.url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+  }
   xhr.timeout = req.timeout;
-  xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onload = function() {
     self.ajax_onload(self, xhr);
   };
