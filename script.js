@@ -2000,6 +2000,9 @@ FwLite.prototype.make_view = function(self, vw, pelm) {
       elm = self.createSelectorElement(self, pt);
     } else if (ptTyp == 'anchor') {
       elm = self.createAnchorElement(self, pt);
+    } else if (ptTyp == 'html') {
+      rootElm.insertAdjacentHTML(pt.position, pt.content);
+      continue;
 
     } else if (ptTyp == 'def-list') {
       elm = self.createDefinitionList(self, pt);
@@ -2040,10 +2043,10 @@ FwLite.prototype.make_views = function(self, defs) {
  * @since 2019/3/10
  */
 FwLite.prototype.inRect = function(x, y, elmRect) {
-  var x2 = elmRect.x + elmRect.width;
-  var y2 = elmRect.y + elmRect.height;
-  if ((elmRect.x <= x) && (x <= x2)
-   && (elmRect.y <= y) && (y <= y2)) {
+  var x2 = elmRect.left + elmRect.width;
+  var y2 = elmRect.top  + elmRect.height;
+  if ((elmRect.left <= x) && (x <= x2)
+   && (elmRect.top  <= y) && (y <= y2)) {
      return true;
    }
    return false;
